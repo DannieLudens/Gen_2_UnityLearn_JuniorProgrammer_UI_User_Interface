@@ -52,7 +52,7 @@ public class Target : MonoBehaviour
     // Returns a random spin value between -maxTorque and maxTorque
     private float RandomTorque()
     {
-        return Random.Range(-maxTorque, maxTorque); 
+        return Random.Range(-maxTorque, maxTorque);
     }
 
     // Returns a spawn position: random X, fixed low Y, Z = 0
