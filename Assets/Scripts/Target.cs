@@ -13,10 +13,13 @@ public class Target : MonoBehaviour
     [SerializeField] private float ySpawnPos = -6;    // Spawn height (below the screen)
 
     private Rigidbody _targetRb;                      // Reference to the Rigidbody so we can apply forces
+    private GameManager gameManager;                 // Reference to the GameManager so we can update the score
+    public int pointValue;                               // Points earned for clicking this target
 
     // Runs once when the object appears: positions it and launches it with random force and spin
     private void Start()
     {
+        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();                    // Finds the GameManager in the scene
         _targetRb = GetComponent<Rigidbody>();                                                        // Gets the Rigidbody on this same GameObject
         _targetRb.AddForce(RandomForce(), ForceMode.Impulse);                                         // Instant upward push
         _targetRb.AddTorque(RandomTorque(), RandomTorque(), RandomTorque(), ForceMode.Impulse);       // Instant spin on X, Y and Z
@@ -37,6 +40,7 @@ public class Target : MonoBehaviour
                 if (hit.transform == transform)                                            // If ray hit this enemy, destroy it
                 {
                     Destroy(gameObject);                                                   // Removes the object from the scene
+                    gameManager.UpdateScore(5);                                            // Updates the score from the GameManager class and adds 5 points
                 }
             }
 

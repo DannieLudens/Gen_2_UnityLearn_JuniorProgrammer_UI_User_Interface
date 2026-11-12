@@ -27,12 +27,10 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(_spawnRate);      // Pauses the coroutine (not the game) for _spawnRate seconds
             int index = Random.Range(0, targets.Count);      // Random index from 0 to Count-1 (with ints, the max is exclusive)
             Instantiate(targets[index]);                     // Creates a copy of the chosen prefab in the scene
-
-            UpdateScore(5);                                 // Adds 5 points to the score for each target spawned
         }
     }
 
-    private void UpdateScore(int scoreToAdd)
+    public void UpdateScore(int scoreToAdd)
     {
         _score += scoreToAdd;                          // Adds the points to the score
         scoreText.text = "Score: " + _score;          // Updates the score text
