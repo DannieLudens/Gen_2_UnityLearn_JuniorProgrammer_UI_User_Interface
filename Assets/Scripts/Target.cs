@@ -11,10 +11,11 @@ public class Target : MonoBehaviour
     [SerializeField] private float maxTorque = 10;    // Maximum spin (per axis) so it rotates in the air
     [SerializeField] private float xRange = 4;        // Horizontal spawn range: between -4 and 4
     [SerializeField] private float ySpawnPos = -6;    // Spawn height (below the screen)
+    [SerializeField] private int pointValue;           // Points earned for clicking this target
+    [SerializeField] private ParticleSystem explosionEffect;  // Particle effect prefab to play when clicked
 
     private Rigidbody _targetRb;                      // Reference to the Rigidbody so we can apply forces
     private GameManager gameManager;                 // Reference to the GameManager so we can update the score
-    public int pointValue;                               // Points earned for clicking this target
 
     // Runs once when the object appears: positions it and launches it with random force and spin
     private void Start()
@@ -40,7 +41,8 @@ public class Target : MonoBehaviour
                 if (hit.transform == transform)                                            // If ray hit this enemy, destroy it
                 {
                     Destroy(gameObject);                                                   // Removes the object from the scene
-                    gameManager.UpdateScore(5);                                            // Updates the score from the GameManager class and adds 5 points
+                    Instantiate(explosionEffect, transform.position, transform.rotation);  // Plays the explosion effect at the target's position and rotation
+                    gameManager.UpdateScore(pointValue);                                   // Updates the score from the GameManager class and adds the points for this target
                 }
             }
 
