@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;                    // Core Unity API (MonoBehaviour, Rigidbody, Vector3...)
 using UnityEngine.InputSystem;        // New Input System (Mouse.current, keyboard, etc.)
 using Random = UnityEngine.Random;    // Makes clear "Random" means Unity's, not System.Random
@@ -40,13 +41,18 @@ public class Target : MonoBehaviour
             {
                 if (hit.transform == transform)                                            // If ray hit this enemy, destroy it
                 {
-                    Destroy(gameObject);                                                   // Removes the object from the scene
-                    Instantiate(explosionEffect, transform.position, transform.rotation);  // Plays the explosion effect at the target's position and rotation
-                    gameManager.UpdateScore(pointValue);                                   // Updates the score from the GameManager class and adds the points for this target
+                    OnMouseDown();  // Calls the OnMouseDown method to handle the click
                 }
             }
 
         }
+    }
+
+    private void OnMouseDown()
+    {
+        Destroy(gameObject);                                                    // Removes the object from the scene
+        Instantiate(explosionEffect, transform.position, transform.rotation);   // Plays the explosion effect at the target's position and rotation
+        gameManager.UpdateScore(pointValue);                                    // Updates the score from the GameManager class and adds the points for this target
     }
 
     // Returns an upward vector with a random magnitude between minSpeed and maxSpeed
@@ -72,6 +78,10 @@ public class Target : MonoBehaviour
         if (other.CompareTag("DestroyZone"))
         {
             Destroy(gameObject);
+            if (!gameObject.CompareTag("Bad"))
+            {
+                GameManager.GameOver();
+            }
         }
     }
 }
