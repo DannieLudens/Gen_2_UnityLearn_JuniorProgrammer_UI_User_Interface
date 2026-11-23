@@ -45,5 +45,4 @@ public class GameManager : MonoBehaviour
     {
         gameOverText.gameObject.SetActive(true);  // Shows the Game Over text
     }
-
 }
