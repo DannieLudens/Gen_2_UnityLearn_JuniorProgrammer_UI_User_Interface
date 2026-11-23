@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -11,26 +11,41 @@ public class GameManagerX : MonoBehaviour
     public TextMeshProUGUI gameOverText;
     public GameObject titleScreen;
     public Button restartButton; 
+    public TextMeshProUGUI timerText;   // Bonus: countdown timer text
 
     public List<GameObject> targetPrefabs;
 
     private int score;
     private float spawnRate = 1.5f;
     public bool isGameActive;
+    private float timeLeft = 60;        // Bonus: seconds before the game ends
 
     private float spaceBetweenSquares = 2.5f; 
     private float minValueX = -3.75f; //  x value of the center of the left-most square
     private float minValueY = -3.75f; //  y value of the center of the bottom-most square
     
     // Start the game, remove title screen, reset score, and adjust spawnRate based on difficulty button clicked
-    public void StartGame()
+    public void StartGame(int difficulty)
     {
-        spawnRate /= 5;
+        spawnRate /= difficulty;            // Fix: use the difficulty from the button instead of always 5
         isGameActive = true;
         StartCoroutine(SpawnTarget());
         score = 0;
         UpdateScore(0);
         titleScreen.SetActive(false);
+    }
+
+    // Bonus: every frame while playing, counts down the timer and ends the game at 0
+    private void Update()
+    {
+        if (!isGameActive) return;                                   // Only count while the game is running
+
+        timeLeft -= Time.deltaTime;                                  // Subtract the seconds since the last frame
+        timerText.text = "Time: " + Mathf.CeilToInt(Mathf.Max(timeLeft, 0)); // Show whole seconds, never below 0
+        if (timeLeft <= 0)
+        {
+            GameOver();                                              // Time is up
+        }
     }
 
     // While game is active spawn a random target
@@ -70,14 +85,14 @@ public class GameManagerX : MonoBehaviour
     public void UpdateScore(int scoreToAdd)
     {
         score += scoreToAdd;
-        scoreText.text = "score";
+        scoreText.text = "Score: " + score;     // Fix: show the actual score value
     }
 
     // Stop game, bring up game over text and restart button
     public void GameOver()
     {
         gameOverText.gameObject.SetActive(true);
-        restartButton.gameObject.SetActive(false);
+        restartButton.gameObject.SetActive(true); // Fix: show the restart button on game over
         isGameActive = false;
     }
 

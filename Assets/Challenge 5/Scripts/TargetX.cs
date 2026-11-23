@@ -1,6 +1,7 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;   // New Input System (Mouse.current)
 
 public class TargetX : MonoBehaviour
 {
@@ -26,8 +27,24 @@ public class TargetX : MonoBehaviour
 
     }
 
+    // Fix: the target was destroyed on mouse hover (OnMouseEnter). Now it checks for a real click.
+    // OnMouse* messages don't run with the new Input System only, so a raycast is used (same as Prototype 5).
+    private void Update()
+    {
+        if (!gameManagerX.isGameActive || Mouse.current == null) return;          // No game running or no mouse
+
+        if (Mouse.current.leftButton.wasPressedThisFrame)                         // Left click this frame?
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue()); // Ray from the camera through the pointer
+            if (Physics.Raycast(ray, out RaycastHit hit) && hit.transform == transform)  // Did it hit THIS target?
+            {
+                HandleClick();
+            }
+        }
+    }
+
     // When target is clicked, destroy it, update score, and generate explosion
-    private void OnMouseEnter()
+    private void HandleClick()
     {
         if (gameManagerX.isGameActive)
         {
