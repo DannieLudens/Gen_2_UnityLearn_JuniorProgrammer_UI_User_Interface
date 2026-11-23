@@ -12,8 +12,8 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: DefaultCompany
-  productName: Gen_2_UnityLearn_JuniorProgrammer_UI_User_Interface
+  companyName: DanieLudens
+  productName: Clicky Mouse - Unit 5
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.13725491, g: 0.12156863, b: 0.1254902, a: 1}
@@ -549,7 +549,8 @@ PlayerSettings:
   openGLRequireES31AEP: 0
   openGLRequireES32: 0
   m_TemplateCustomTags:
-    PRODUCT_DESCRIPTION: 
+    PRODUCT_DESCRIPTION: "Unity Learn Junior Programmer \u2013 Unit 5: Clicky Mouse
+      & Whack-a-Food challenge"
   mobileMTRendering:
     Android: 1
     iPhone: 1
