@@ -1,5 +1,3 @@
-using System;
-using Unity.VisualScripting;
 using UnityEngine;                    // Core Unity API (MonoBehaviour, Rigidbody, Vector3...)
 using UnityEngine.InputSystem;        // New Input System (Mouse.current, keyboard, etc.)
 using Random = UnityEngine.Random;    // Makes clear "Random" means Unity's, not System.Random
@@ -16,12 +14,12 @@ public class Target : MonoBehaviour
     [SerializeField] private ParticleSystem explosionEffect;  // Particle effect prefab to play when clicked
 
     private Rigidbody _targetRb;                      // Reference to the Rigidbody so we can apply forces
-    private GameManager gameManager;                 // Reference to the GameManager so we can update the score
+    private GameManager _gameManager;                // Reference to the GameManager so we can update the score
 
     // Runs once when the object appears: positions it and launches it with random force and spin
     private void Start()
     {
-        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();                    // Finds the GameManager in the scene
+        _gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();                    // Finds the GameManager in the scene
         _targetRb = GetComponent<Rigidbody>();                                                        // Gets the Rigidbody on this same GameObject
         _targetRb.AddForce(RandomForce(), ForceMode.Impulse);                                         // Instant upward push
         _targetRb.AddTorque(RandomTorque(), RandomTorque(), RandomTorque(), ForceMode.Impulse);       // Instant spin on X, Y and Z
@@ -31,6 +29,8 @@ public class Target : MonoBehaviour
     // Runs every frame: checks whether THIS object was clicked
     private void Update()
     {
+        if (!_gameManager.IsGameActive) return;                                            // Ignore clicks before the game starts or after game over
+
         if (Mouse.current.leftButton.wasPressedThisFrame)                                  // Was the left mouse button pressed this frame?
         {
             Debug.Log("Mouse Clicked");                                                    // Console message for debugging
@@ -39,20 +39,21 @@ public class Target : MonoBehaviour
 
             if (Physics.Raycast(ray, out RaycastHit hit))                                  // Casts the ray; if it hits a collider, the result is stored in "hit"
             {
-                if (hit.transform == transform)                                            // If ray hit this enemy, destroy it
+                if (hit.transform == transform)                                            // If the ray hit this target, handle the click
                 {
-                    OnMouseDown();  // Calls the OnMouseDown method to handle the click
+                    HandleClick();  // Destroys the target and adds its points
                 }
             }
 
         }
     }
 
-    private void OnMouseDown()
+    // Destroys this target, plays the explosion and adds its points to the score
+    private void HandleClick()
     {
         Destroy(gameObject);                                                    // Removes the object from the scene
         Instantiate(explosionEffect, transform.position, transform.rotation);   // Plays the explosion effect at the target's position and rotation
-        gameManager.UpdateScore(pointValue);                                    // Updates the score from the GameManager class and adds the points for this target
+        _gameManager.UpdateScore(pointValue);                                    // Updates the score from the GameManager class and adds the points for this target
     }
 
     // Returns an upward vector with a random magnitude between minSpeed and maxSpeed
@@ -73,14 +74,15 @@ public class Target : MonoBehaviour
         return new Vector3(Random.Range(-xRange, xRange), ySpawnPos);   // Z is omitted, so it defaults to 0
     }
 
+    // Called when this target enters a trigger: missing a good target ends the game
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("DestroyZone"))
+        if (other.CompareTag("DestroyZone"))                               // Did it fall into the sensor below the screen?
         {
-            Destroy(gameObject);
-            if (!gameObject.CompareTag("Bad"))
+            Destroy(gameObject);                                           // Removes the fallen target
+            if (!gameObject.CompareTag("Bad") && _gameManager.IsGameActive) // A missed good target ends the game (only once)
             {
-                gameManager.GameOver();
+                _gameManager.GameOver();
             }
         }
     }
